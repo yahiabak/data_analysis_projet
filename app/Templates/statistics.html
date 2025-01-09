@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Analysis Portal</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            background-color: #000000;
+            color: #f0f0f0;
+            margin: 0;
+            display: flex;
+            flex-direction: row;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: #1dbf73;
+            text-decoration: none;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-button:before {
+            content: '←';
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+
+        .back-button:hover {
+            color: #16a159;
+        }
+
+        .back-button:hover:before {
+            transform: translateX(-5px);
+        }
+
+        .form-container {
+            width: 50%;
+            padding: 40px;
+            background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
+            border-right: 2px solid rgba(255, 107, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #ff6b00;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        label {
+            color: #ff6b00;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 107, 0, 0.1);
+            border-radius: 10px;
+            color: white;
+            font-family: 'Georgia', serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:hover, select:hover {
+            border-color: rgba(255, 107, 0, 0.3);
+        }
+
+        input:focus, select:focus {
+            border-color: #1dbf73;
+            outline: none;
+        }
+
+        button {
+            grid-column: span 2;
+            padding: 15px;
+            background: linear-gradient(145deg, #1dbf73, #18a864);
+            color: white;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(145deg, #18a864, #1dbf73);
+            transform: scale(1.02);
+        }
+
+        .stats-container {
+            width: 50%;
+            padding: 40px;
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            overflow-y: auto;
+        }
+
+        .stats-container h2 {
+            font-size: 1.5rem;
+            color: #1dbf73;
+            margin-bottom: 20px;
+        }
+	
+        .stats-container p {
+            font-size: 1.1rem;
+            margin: 10px 0 20px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .form-container, .stats-container {
+                width: 100%;
+                padding: 20px;
+            }
+
+            form {
+                grid-template-columns: 1fr;
+            }
+
+            button {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="{% url 'upload_file' %}" class="back-button">Back to Upload Page</a>
+
+    <div class="form-container">
+        <h1>Data Exploration</h1>
+        <form>
+            <div class="form-group">
+                <label for="start_index">Initial Row:</label>
+                <input type="number" id="start_index" name="start_index" required>
+            </div>
+
+            <div class="form-group">
+                <label for="end_index">Final Row:</label>
+                <input type="number" id="end_index" name="end_index" required>
+            </div>
+
+            <div class="form-group">
+                <label for="selected_column">Target Attribute:</label>
+                <select id="selected_column" name="selected_column" required>
+                    <option value="">Choose an attribute...</option>
+                    {% for column in columns %}
+                        <option value="{{ column }}">{{ column }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit">Compute Metrics</button>
+        </form>
+    </div>
+
+    <div class="stats-container">
+        {% if stats %}
+        <div class="stats-result">
+            <h2>Statistical Analysis for Column: {{ selected_column }} (Rows {{ start_index }} to {{ end_index }})</h2>
+            <p><strong>Mean:</strong> {{ stats.mean }}</p>
+            <p><strong>Median:</strong> {{ stats.median }}</p>
+            <p><strong>Standard Deviation:</strong> {{ stats.std_dev }}</p>
+            <p><strong>Min:</strong> {{ stats.min }}</p>
+            <p><strong>Max:</strong> {{ stats.max }}</p>
+            <p><strong>Count:</strong> {{ stats.count }}</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
